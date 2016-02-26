@@ -1,0 +1,35 @@
+#case node[:packages][:ruby], if == to ruby2.0, install ruby 2.0 from source, else do normal method
+case node[:packages][:ruby]
+when "ruby2.1.6" # Download 2.1.6 from ruby website
+  base_filename = 'ruby-2.1.6' # 
+  ruby_checksum = '7b5233be35a4a7fbd64923e42efb70b7bebd455d9d6f9d4001b3b3a6e0aa6ce9' # sha256 per https://www.ruby-lang.org/en/downloads/
+  src_filepath = "#{Chef::Config['file_cache_path']}/#{base_filename}.tar.bz2" # Lets use bz2, smaller. Less download time.
+  extract_path = "#{Chef::Config['file_cache_path']}/#{base_filename}"
+
+  remote_file "#{src_filepath}" do
+    source "https://cache.ruby-lang.org/pub/ruby/2.1/#{base_filename}.tar.bz2"
+    owner 'root'
+    group 'root'
+    mode '0755'
+    checksum "#{ruby_checksum}" # so there isn't duplicate downloads
+  end.run_action(:create_if_missing)
+
+  bash 'extract_ruby' do
+    cwd ::File.dirname(src_filepath)
+    code <<-EOH
+      mkdir -p #{extract_path}
+      tar -jxvf #{src_filepath} -C #{Chef::Config['file_cache_path']}/
+      cd #{extract_path}
+      ./configure
+      make
+      sudo make install
+      ruby -v
+      EOH
+    not_if { ::File.exists?(extract_path) }
+  end.run_action(:run)
+
+else # if no override attribute is set
+  package "#{node[:packages][:ruby]}" do
+    action :nothing
+  end.run_action(:install)
+end
