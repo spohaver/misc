@@ -23,7 +23,6 @@ when "ruby2.1.6" # Download 2.1.6 from ruby website
       ./configure
       make
       sudo make install
-      ruby -v
       EOH
     not_if { ::File.exists?(extract_path) }
   end.run_action(:run)
