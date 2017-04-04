@@ -1,5 +1,7 @@
 #!/bin/bash
 # installs the MATE Desktop for rhel based systems
+# most of the commands were found on
+# http://jensd.be/125/linux/rhel/install-mate-or-xfce-on-centos-7
 
 echo "installing epel-release.."
 yum install -y epel-release
