@@ -1,4 +1,4 @@
-#!/bin/python
+#!/usr/bin/python
 # author: Sean O'Haver
 # description: Useful script in rpm building to check for symlinks from the
 #              current working directory
