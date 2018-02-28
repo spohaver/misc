@@ -10,7 +10,7 @@ from optparse import OptionParser
 
 def json_load(input_data):
     ''' Load up json data
-    input_data: data from stdin or file
+    input_data: filename location to load json data
     '''
     with open(input_data) as datafile:
         json_data = json.load(datafile)
