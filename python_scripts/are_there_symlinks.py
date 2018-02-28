@@ -6,7 +6,7 @@ import os
 
 def is_symlink(filename):
     if os.path.islink(filename):
-        print "{0}" is a symlink for {1}".format(
+        print "{0} is a symlink for {1}".format(
             filename,
             os.path.join(os.path.dirname(filename), os.readlink(filename))
         )
