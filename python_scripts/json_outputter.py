@@ -8,16 +8,16 @@ import json
 import sys
 from optparse import OptionParser
 
-def json_load(input_data):
+def json_load(filename):
     ''' Load up json data
-    input_data: filename location to load json data
+    filename: filename location to load json data
     '''
-    with open(input_data) as datafile:
+    with open(filename) as datafile:
         json_data = json.load(datafile)
     return json_data
 
-
-def main():
+def optparser():
+    ''' Lets parse some args, arrrg '''
     usage = "usage: %prog [options]"
     parser = OptionParser(usage=usage)
     parser.add_option("-f", "--filename", help="json file")
@@ -26,14 +26,17 @@ def main():
     parser.add_option("-s", "--sort", action="store_true",
                       default=False, help="Sort the keys")
     (options, args) = parser.parse_args()
+    if not options.filename and sys.stdin.isatty():
+        parser.error("No JSON Data Found")
+    return options
+
+def main():
+    options = optparser()
     if options.filename:
         json_data = json_load(options.filename)
     else:
         if not sys.stdin.isatty():
             json_data = json.load(sys.stdin)
-        else:
-            parser.error("No JSON Data Found")
-    print json_data
     print json.dumps(json_data,sort_keys=options.sort,indent=int(options.indent))
     return 0
 
