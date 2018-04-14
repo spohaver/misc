@@ -1,4 +1,4 @@
-#!/bin/python
+#!/usr/bin/python
 from Queue import Queue
 from threading import Thread
 import logging

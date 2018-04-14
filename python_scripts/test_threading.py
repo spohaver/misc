@@ -1,4 +1,4 @@
-#!/bin/python
+#!/usr/bin/python
 from threading import Thread
 import logging
 import random
