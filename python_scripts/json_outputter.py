@@ -1,9 +1,9 @@
 #!/usr/bin/python
 ''' Author: Sean O'Haver
     Desc: In response to times where you don't have jq available, a script that
-          will pretty print json data
-    TODO: Add try/except blocks to catch non json output
+          will pretty print json data, built for python 2.7
 '''
+from __future__ import print_function
 import json
 import sys
 from optparse import OptionParser
@@ -12,8 +12,17 @@ def json_load(filename):
     ''' Load up json data
     filename: filename location to load json data
     '''
-    with open(filename) as datafile:
-        json_data = json.load(datafile)
+    try:
+        with open(filename) as datafile:
+            json_data = json.load(datafile)
+    except ValueError as val_err:
+        print("Could not parse JSON from {filename}\nError:{err}".format(
+                filename=filename,
+                err=val_err
+                ),
+            file=sys.stderr
+            )
+        sys.exit(1)
     return json_data
 
 def optparser():
@@ -35,6 +44,11 @@ def optparser():
             default=False,
             help="Use minimal separators to shorten whitespace (',',':')"
             )
+    parser.add_option("-v", "--verbose",
+            action="store_true",
+            default=False,
+            help="Print out args given and explanations"
+            )
     (options, args) = parser.parse_args()
     if not options.filename and sys.stdin.isatty():
         parser.error("No JSON Data Found")
@@ -44,6 +58,8 @@ def optparser():
         parser.error("{value} is not an integer!".format(
             value=options.indent)
             )
+    if options.verbose:
+        print("Options: {0}".format(options))
     return options
 
 def main():
@@ -54,20 +70,23 @@ def main():
         if not sys.stdin.isatty():
             json_data = json.load(sys.stdin)
     if options.minimal:
-        print("Indent Value {value} ignored..".format(
-            value=options.indent)
-            )
-        print json.dumps(
+        if options.verbose:
+            print("Indent Value {value} ignored..".format(
+                value=options.indent)
+                )
+        print(json.dumps(
                 json_data,
                 separators=(',',':'),
                 sort_keys=options.sort,
                 )
+        )
     else:
-        print json.dumps(
+        print(json.dumps(
                 json_data,
                 sort_keys=options.sort,
                 indent=int(options.indent)
                 )
+        )
     return 0
 
 if __name__ == "__main__":
