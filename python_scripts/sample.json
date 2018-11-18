@@ -1,0 +1,21 @@
+{
+	"pets": [{
+			"name": "Lady",
+			"species": "dog",
+			"breed": "chihuahua",
+			"birthdate": "01/01/2015"
+		},
+		{
+			"name": "Chiquito",
+			"species": "dog",
+			"breed": "chihuhua",
+			"birthdate": "08/01/2006"
+		},
+		{
+			"name": "Toby",
+			"species": "dog",
+			"breed": "Labrador/German Shephard",
+			"birthdate": "10/1/2013"
+		}
+	]
+}
