@@ -53,6 +53,7 @@ def setup_logging(
     handler.setFormatter(fmt)
     log.addHandler(handler)
     log.setLevel(level)
+    LOG.debug('logging setup')
 
 
 def run_cmd(cmd, timeout=60):
@@ -73,7 +74,7 @@ def run_cmd(cmd, timeout=60):
     if p.returncode == 0:
         return p.stdout
     else:
-        logging.warning("Command {0} returned {1}:".format(cmd, p.returncode))
+        LOG.warn("Command {0} returned {1}:".format(cmd, p.returncode))
         return False
 
 
@@ -98,7 +99,7 @@ def run_ipmicmd(user, filename, hostname, cmd, options=OPTIONS):
                                cmd=cmd
                                )
     )
-    logging.debug('Running {0}'.format(ipmi_cmd))
+    LOG.debug('Running {0}'.format(ipmi_cmd))
     return run_cmd(ipmi_cmd)
 
 
@@ -117,10 +118,10 @@ def validate_fqdn(hostname):
     compile_string = '^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$'
     r = re.compile(compile_string, re.IGNORECASE)
     if r.match(hostname):
-        logging.debug('{0} validated'.format(hostname))
+        LOG.debug('{0} validated'.format(hostname))
         return True
     else:
-        logging.debug('{0} could not be validated'.format(hostname))
+        LOG.debug('{0} could not be validated'.format(hostname))
         return False
 
 
@@ -133,10 +134,10 @@ def parse_args():
     )
     args = parser.parse_args()
     if validate_fqdn(args.hostname):
-        logging.debug('returning args: {0}'.format(args))
+        LOG.debug('returning args: {0}'.format(args))
         return args
     else:
-        logging.error('{0} is not a valid hostname. Exiting'.format(args.hostname))
+        LOG.error('{0} is not a valid hostname. Exiting'.format(args.hostname))
         sys.exit(1)
 
 
@@ -170,7 +171,7 @@ def get_creds(hostname):
     """
     for vendor in CREDS:
         if not os.path.exists(CREDS[vendor]['file']):
-            logging.error('{0} does not exist, are you running this from the right '
+            LOG.error('{0} does not exist, are you running this from the right '
                   'host? Exiting'.format(CREDS[vendor]['file']))
             sys.exit(2)
         cmd = 'chassis power status'
@@ -178,12 +179,12 @@ def get_creds(hostname):
                        CREDS[vendor]['file'],
                        hostname,
                        cmd):
-            logging.debug('Returning {0}, {1}, {2}'.format(
+            LOG.debug('Returning {0}, {1}, {2}'.format(
                 vendor, CREDS[vendor]['user'], CREDS[vendor]['file']))
             return vendor, CREDS[vendor]['user'], CREDS[vendor]['file']
         else:
-            logging.warning('{0} did not work, continuing..'.format(vendor))
-    logging.error('Ran out of vendors, exiting')
+            LOG.warn('{0} did not work, continuing..'.format(vendor))
+    LOG.error('Ran out of vendors, exiting')
     sys.exit(3)
 
 
@@ -204,7 +205,7 @@ if __name__ == '__main__':
     if os.geteuid() == 0:
         sys.exit(int(main()))
     else:
-        logging.error(
+        LOG.error(
             "This script needs to be run with administrative privileges"
         )
         sys.exit(1)
