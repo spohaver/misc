@@ -23,11 +23,17 @@ def python_sort(items):
 
 
 def get_pivot(begin, end):
-    """ takes begin, end, and finds the 'middle """
+    """ takes begin, end, and finds the 'middle' """
     return int(floor((begin + end)/2))
 
 
 def binary_search(items, search_value):
+    """ using binary search methodolgy to search items
+    :param items: items to be searched
+    :type items: list
+    :param search_value: value we are querying from items
+    :type search_value: int (in this case)
+    """
     start = 0
     end = len(items)
     pivot = get_pivot(start, end)
@@ -45,6 +51,12 @@ def binary_search(items, search_value):
 
 
 def python_search(items, search_value):
+    """ quick and dirty python library for searching
+    :param items: items to be searched
+    :type items: list
+    :param search_value: value we are quering from items
+    :type search_value: int (in this case)
+    """
     if search_value in items:
         return True
     else:
@@ -52,6 +64,7 @@ def python_search(items, search_value):
 
 
 def main():
+    """ party """
     print('Binary vs Python Search')
     item_sets = [10, 1000, 1000000]
     for num_items in item_sets:
