@@ -97,7 +97,7 @@ def main():
         for num in range(SEARCH_TIMES):
             query = int(randint(0,MAXNUM))
             if python_search(items, query):
-                count_true = 1
+                count_true += 1
             else:
                 count_false += 1
         toc = perf_counter()
