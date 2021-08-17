@@ -1,0 +1,21 @@
+#!/bin/bash
+# Switches the user to a subshell with virtual environment located in .venvlocation activated
+
+# CONSTANTS
+VENV_FILE=.venvlocation
+
+if [ -e "$VENV_FILE" ]; then
+  venv_dir=$(cat $VENV_FILE)
+else
+  echo "$VENV_FILE not found, please run './setup.sh' to configure $VENV_FILE"
+  echo "Exiting.."
+  exit 1
+fi
+
+prompt="'[\u@\h \W]{venv: "${venv_dir##/*/}"}\$ '"
+echo -e "\nStarting Subshell Virtual Environment for ${venv_dir##/*/}. Type 'exit' or CTRL+D to exit subshell...\n"
+BASH=$(which bash) && \
+  bash -c \
+  "source ${venv_dir}/bin/activate; \
+   PS1=$prompt; \
+   $BASH -i"
