@@ -7,8 +7,7 @@ import sys
 
 
 DESC = """Gets the env tags from AWS metatadata.
-    REQUIRES: 'Allow tags in instance metadata' enabled.
-    Note: default tag that pulls is 'envs', value must be in JSON format"""
+    REQUIRES: 'Allow tags in instance metadata' enabled"""
 METADATA_URL = 'http://169.254.169.254'
 URI_TAGS = 'latest/meta-data/tags/instance'
 
@@ -24,13 +23,21 @@ def parse_args():
     parser.add_argument(
         'tag',
         default='envs',
-        help='tag we want to grab, default="envs"',
+        help='Tag we want to grab from instance meta-data',
         nargs='?'
     )
     parser.add_argument(
         '--all-tags',
+        '-a',
         action='store_true',
-        help='grab all the tags',
+        help='Grab all the tags from instance meta-data',
+        default=False
+    )
+    parser.add_argument(
+        '--export-tags',
+        '-e',
+        action='store_true',
+        help='Export tags that can be used in eval/bash',
         default=False
     )
     args = parser.parse_args()
@@ -40,25 +47,30 @@ def parse_args():
 def main():
     args = parse_args()
     env_vars = {}
-    print(args)
     if args.all_tags:
         uri = os.path.join(METADATA_URL, URI_TAGS)
-        print('URI: ', uri)
-        print('Request response: ', requests.get(uri).text)
         tags = requests.get(uri).text.split('\n')
-        print('tags: ', tags)
         for tag in tags:
             uri = os.path.join(METADATA_URL, URI_TAGS, tag)
-            print('URI: ', uri)
             env_vars[tag] = requests.get(uri).text
     else:
         uri = os.path.join(METADATA_URL, URI_TAGS, args.tag)
-        print('URI: ', uri)
         if args.tag == 'envs':
             env_vars = parse_envs(requests.get(uri).json)
         else:
             env_vars[args.tag] = requests.get(uri).text
-    print(env_vars)
+    if args.export_tags:
+        os_envs = dict(os.environ).keys()
+        for tag in env_vars.keys():
+            if tag not in os_envs:
+                print('export {0}="{1}"'.format(tag.upper(), env_vars[tag]))
+            else
+                # DO NOT override system set environment variables, commented out
+                print('#export {0}="{1}"'.format(tag.upper(), env_vars[tag]))
+    else:
+        print("Tags and values")
+        for tag in env_vars.keys():
+            print('{0}: {1}'.format(tag, env_vars[tag]))
     return 0
 
 
